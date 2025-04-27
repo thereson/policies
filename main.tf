@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3"{
 	bucket = "thereson-pdk"
-	key = "states/terraform.tf"
+	key = "states/terraform.tfstate"
 	region = "eu-north-1"
 }
 }

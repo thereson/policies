@@ -1,8 +1,9 @@
-name: Terraform Plan/Apply
+
+name: Terraform Plan on PR
 
 on:
-  push:
-    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]  
 
 jobs:
   terraform:

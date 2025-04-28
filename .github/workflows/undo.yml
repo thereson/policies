@@ -1,0 +1,35 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm'
+        required: true
+        default: 'cancel'
+
+jobs:
+  destroy:
+    if: github.event.inputs.confirm == 'destroy'  # Double confirmation
+    runs-on: ubuntu-latest
+    environment: production  # Protect with environment approvals (optional)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      - name: Terraform Init (with S3 backend)
+        run: terraform init -backend-config="bucket=thereson-pdk" -backend-config="key=states/terraform.tfstate" -backend-config="region=eu-north-1"
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      

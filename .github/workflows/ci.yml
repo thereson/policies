@@ -3,7 +3,8 @@ name: Terraform Plan on PR
 
 on:
   pull_request:
-    branches: [ "main" ]  
+    branches: [ "main" ] 
+     
 
 jobs:
   terraform:
@@ -18,8 +19,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform Init & Apply
+        working-directory: ./terraform  
+        run: |
+          terraform init
+          terraform plan
 
-      - name: Terraform Plan
-        run: terraform plan
+      # - name: Terraform Init
+      #   run: terraform init
+
+      # - name: Terraform Plan
+      #   run: terraform plan

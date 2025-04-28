@@ -21,9 +21,15 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform Init & Apply
+        working-directory: ./terraform  # <-- Key change
+        run: |
+          terraform init
+          terraform apply -auto-approve
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      # - name: Terraform Init
+      #   run: terraform init
+
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve
         

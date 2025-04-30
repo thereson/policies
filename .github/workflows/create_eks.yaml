@@ -1,4 +1,4 @@
-name: Terraform Destroy
+name: create eks cluster
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   destroy:
-    if: github.event.inputs.confirm == 'destroy'
+    if: github.event.inputs.confirm == 'confirm'
     runs-on: ubuntu-latest
     
     steps:
@@ -25,13 +25,12 @@ jobs:
           aws-region: eu-north-1
 
       - name: Terraform Init
-        working-directory: ./terraform  
+        working-directory: ./terraform/eks
         run: |
           terraform init \
             -backend-config="bucket=thereson-pdk" \
-            -backend-config="key=states/terraform.tfstate" \
+            -backend-config="key=eks/terraform.tfstate" \
             -backend-config="region=eu-north-1"
 
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
-      
+      - name: Terraform apply
+        run: terraform apply -auto-approve

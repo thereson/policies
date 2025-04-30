@@ -9,7 +9,7 @@ on:
 
 jobs:
   destroy:
-    if: github.event.inputs.confirm == 'create'
+    if: github.event.inputs.confirm == 'confirm'
     runs-on: ubuntu-latest
     
     steps:

@@ -1,6 +1,6 @@
 
 provider "aws" {
-  region = "us-west-2" 
+  region = "us-west-1" 
 }
 
 terraform {
@@ -21,7 +21,7 @@ module "vpc" {
   name = "eks-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["eu-north-2a", "eu-north-2b", "eus-north-2c"]
+  azs             = ["eu-north-2a", "eu-north-2b", "eu-north-2c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 

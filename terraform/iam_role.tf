@@ -18,7 +18,7 @@ resource "aws_iam_role" "example_role" {
 
 resource "aws_iam_role" "Lambda_execution_role" {
   name  = "lambda_exec_role"
-  assume_role_policy = jsondecode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {

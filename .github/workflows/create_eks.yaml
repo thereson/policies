@@ -30,7 +30,7 @@ jobs:
           terraform init \
             -backend-config="bucket=thereson-pdk" \
             -backend-config="key=eks/terraform.tfstate" \
-            -backend-config="region=us-east-1"
+            -backend-config="region=eu-north-1"
 
       - name: Terraform apply
         run: terraform apply -auto-approve

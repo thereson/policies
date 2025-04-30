@@ -25,12 +25,12 @@ jobs:
           aws-region: eu-north-1
 
       - name: Terraform Init
-        working-directory: ./terraform  
+        working-directory: ./terraform/eks
         run: |
           terraform init \
             -backend-config="bucket=thereson-pdk" \
-            -backend-config="key=states/terraform.tfstate" \
-            -backend-config="region=eu-north-1"
+            -backend-config="key=eks/terraform.tfstate" \
+            -backend-config="region=us-east-1"
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve

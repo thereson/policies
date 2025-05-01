@@ -28,10 +28,12 @@ jobs:
         working-directory: ./terraform/eks
         run: |
           ls -la
-          if [ ! -f main.tf ]; then
-            echo "ERROR: No main.tf found!"
+          if [ ! -f eks.tf ]; then
+            echo "warning: No .tf file found!"
             exit 1
           fi
+
+          
 
       - name: Terraform Init
         working-directory: ./terraform/eks

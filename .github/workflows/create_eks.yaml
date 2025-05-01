@@ -25,7 +25,7 @@ jobs:
           aws-region: eu-north-1
 
       - name: Verify Terraform Files
-        working-directory: ./terraform/eks
+        working-directory: ./terraform/infra
         run: |
           ls -la
           if [ ! -f eks.tf ]; then
@@ -34,10 +34,10 @@ jobs:
           fi
 
       - name: Fix Permissions
-        run: chmod 644 ./terraform/eks/eks.tf
+        run: chmod 644 ./terraform/infra/infra.tf
 
       - name: Terraform Init
-        working-directory: ./terraform/eks
+        working-directory: ./terraform/infra
         run: |
           terraform init \
             -backend-config="bucket=thereson-pdk" \

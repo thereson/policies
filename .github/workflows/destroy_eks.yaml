@@ -25,7 +25,7 @@ jobs:
           aws-region: eu-north-1
 
       - name: Terraform Init
-        working-directory: ./terraform/eks
+        working-directory: ./terraform/infra
         run: |
           terraform init \
             -backend-config="bucket=thereson-pdk" \

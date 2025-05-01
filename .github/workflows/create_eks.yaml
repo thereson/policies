@@ -45,5 +45,5 @@ jobs:
             -backend-config="region=eu-north-1"
 
       - name: Terraform apply
-        working-directory: ./terraform/infrag
+        working-directory: ./terraform/infra
         run: terraform apply -auto-approve

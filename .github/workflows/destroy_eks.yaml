@@ -33,5 +33,6 @@ jobs:
             -backend-config="region=eu-north-1"
 
       - name: Terraform Destroy
+        working-directory: ./terraform/infra
         run: terraform destroy -auto-approve
       

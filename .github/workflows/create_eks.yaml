@@ -33,7 +33,8 @@ jobs:
             exit 1
           fi
 
-          
+      - name: Fix Permissions
+        run: chmod 644 ./terraform/eks/eks.tf
 
       - name: Terraform Init
         working-directory: ./terraform/eks

@@ -34,7 +34,7 @@ jobs:
           fi
 
       - name: Fix Permissions
-        run: chmod 644 ./terraform/infra/infra.tf
+        run: chmod 644 ./terraform/infra
 
       - name: Terraform Init
         working-directory: ./terraform/infra

@@ -46,12 +46,12 @@ resource "aws_lambda_layer_version" "node_modules" {
 
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "./src/cost"
-  output_path = "./src/cost.zip"
+  source_file = "${path.module}/../src/cost.py"
+  output_path = "${path.module}/cost.zip"
 }
 
 resource "aws_lambda_function" "my_lambda" {
-  function_name = "billing_cost_function"
+  function_name = "cost"
   role          = aws_iam_role.Lambda_execution_role.arn
   handler       = "cost.lambda_handler"
   runtime       = "python3.9"

@@ -32,12 +32,35 @@ resource "aws_iam_role" "Lambda_execution_role" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
+  role       = aws_iam_role.Lambda_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 resource "aws_lambda_layer_version" "node_modules" {
   layer_name = "node_modules"
   filename = "../lambda/layers/jwt_layer.zip"
   compatible_runtimes = [ "nodejs14.x" ]
   
 }
+
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "./src/cost.py"
+  output_path = ".src/cost.zip"
+}
+
+resource "aws_lambda_function" "my_lambda" {
+  function_name = "billing_cost_function"
+  role          = aws_iam_role.Lambda_execution_role.arn
+  handler       = "cost.lambda_handler"
+  runtime       = "python3.9"
+
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+}
+
+
 
 
 # Attach a managed policy (e.g., S3 ReadOnly)

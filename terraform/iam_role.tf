@@ -46,7 +46,7 @@ resource "aws_lambda_layer_version" "node_modules" {
 
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "./src/cost.py"
+  source_file = "../src"
   output_path = ".src/cost.zip"
 }
 

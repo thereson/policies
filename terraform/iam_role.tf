@@ -54,7 +54,7 @@ resource "aws_iam_policy" "cost_explorer_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_cost_explorer_attachment" {
-  role       = aws_iam_role.lambda_execution_role.name
+  role       = aws_iam_role.Lambda_execution_role.name
   policy_arn = aws_iam_policy.cost_explorer_policy.arn
 }
 

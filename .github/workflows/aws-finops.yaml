@@ -37,8 +37,7 @@ jobs:
             --all \
             --report-name finops-report \
             --report-type csv \
-            --dir ./reports \
-            --log-level info
+            --dir ./reports
       
       - name: Upload reports
         uses: actions/upload-artifact@v4  # Updated to v4

@@ -24,11 +24,34 @@ jobs:
         run: pip install aws-finops-dashboard
       
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2  # More widely supported version
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+      
+      - name: Set up AWS CLI profile
+        run: |
+          # Explicitly create a named profile for aws-finops-dashboard
+          mkdir -p ~/.aws
+          
+          # Create the credentials file
+          cat > ~/.aws/credentials << EOF
+          [default]
+          aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region = us-east-1
+          EOF
+          
+          # Create the config file
+          cat > ~/.aws/config << EOF
+          [default]
+          region = us-east-1
+          output = json
+          EOF
+          
+          # Verify AWS configuration
+          aws sts get-caller-identity
       
       - name: Run AWS FinOps Dashboard
         run: |

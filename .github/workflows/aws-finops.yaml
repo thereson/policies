@@ -18,8 +18,7 @@ jobs:
         uses: actions/setup-python@v4  # Using stable v4 instead of v5
         with:
           python-version: '3.11'
-          cache: 'pip'
-          cache-dependency-path: 'none'  # Skip looking for requirements files
+          # Removing the cache option completely
       
       - name: Install dependencies
         run: pip install aws-finops-dashboard

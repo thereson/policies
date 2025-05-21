@@ -1,36 +1,29 @@
 name: AWS FinOps Dashboard Report
 on:
   workflow_dispatch:
-    inputs:
-      profiles:
-        description: 'AWS profiles (comma separated)'
-        required: false
-        default: 'default'
-      tags:
-        description: 'Tags to filter by (format: Key=Value)'
-        required: false
 
 jobs:
   run-finops-dashboard:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # Add 'write' if committing reports back
-    
+      contents: read
+      id-token: write  # Required for OIDC if using it
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4  # Using stable v4 instead of v5
         with:
           python-version: '3.11'
-          cache: 'pip'  # Enable dependency caching
+          cache: 'pip'
 
       - name: Install dependencies
         run: pip install aws-finops-dashboard
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v2  # More widely supported version
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -40,18 +33,14 @@ jobs:
         run: |
           mkdir -p reports
           aws-finops \
-            ${INPUT_PROFILES:+--profiles $INPUT_PROFILES} \
-            ${INPUT_TAGS:+--tag $INPUT_TAGS} \
+            --all \
             --report-name finops-report \
-            --report-type csv json \
+            --report-type csv \
             --dir ./reports \
             --log-level info
-        env:
-          INPUT_PROFILES: ${{ github.event.inputs.profiles }}
-          INPUT_TAGS: ${{ github.event.inputs.tags }}
 
       - name: Upload reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: finops-reports
           path: ./reports/*

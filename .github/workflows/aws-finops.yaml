@@ -1,4 +1,4 @@
-name: AWS FinOps Dashboard
+name: AWS FinOps Dashboard Report
 
 on:
   workflow_dispatch:
@@ -6,26 +6,33 @@ on:
 jobs:
   run-finops-dashboard:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
-      - name: Install aws-finops-dashboard
+      - name: Install pipx
         run: |
-          python -m pip install --upgrade pip
-          pip install aws-finops-dashboard
+          python3 -m pip install --user pipx
+          python3 -m pipx ensurepath
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install AWS FinOps Dashboard
+        run: |
+          pipx install aws-finops-dashboard
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Run aws-finops-dashboard
-        run: aws-finops-dashboard --log-level info --tags
+      - name: Run AWS FinOps Dashboard
+        run: |
+          aws-finops-dashboard --log-level info --tags

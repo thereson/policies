@@ -82,8 +82,8 @@ resource "aws_iam_role_policy_attachment" "s3_readonly" {
 
 data "archive_file" "lambda_layer_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/layer"
-  output_path = "${path.module}/layer.zip"
+  source_dir  = "${path.module}/lambda/layer"
+  output_path = "${path.module}/lambda/layer.zip"
 }
 
 resource "aws_lambda_layer_version" "python_dependencies" {

@@ -1,1 +1,4 @@
-name = "gerard"
+def na(name):
+    return name
+
+na()

@@ -64,15 +64,22 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# resource "aws_lambda_function" "my_lambda" {
-#   function_name = "cost"
-#   role          = aws_iam_role.Lambda_execution_role.arn
-#   handler       = "cost.lambda_handler"
-#   runtime       = "python3.9"
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_dir  = "../src"
+  output_path = "../build/lambda_function.zip"
+}
 
-#   filename         = data.archive_file.lambda_zip.output_path
-#   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-# }
+resource "aws_lambda_function" "my_lambda" {
+  function_name = "cost"
+  role          = aws_iam_role.Lambda_execution_role.arn
+  handler       = "cost.lambda_handler"
+  runtime       = "python3.9"
+
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+}
+
 
 # Attach a managed policy (e.g., S3 ReadOnly)
 resource "aws_iam_role_policy_attachment" "s3_readonly" {

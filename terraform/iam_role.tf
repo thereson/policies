@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "../src"
-  output_path = "../build/lambda_function.zip"
+  output_path = "../build/custom.zip"
 }
 
 resource "aws_lambda_function" "my_lambda" {

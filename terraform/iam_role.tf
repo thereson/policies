@@ -71,7 +71,7 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "my_lambda" {
-  function_name = "cost"
+  function_name = "index"
   role          = aws_iam_role.Lambda_execution_role.arn
   handler       = "index.lambda_handler"
   runtime       = "python3.9"

@@ -1,4 +1,4 @@
-from trying import name
+from custom import name
 
 
 def lambda_handler(event, context):

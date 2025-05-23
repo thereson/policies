@@ -109,6 +109,7 @@ resource "aws_lambda_function" "my_second" {
   role          = aws_iam_role.Lambda_execution_role.arn
   handler       = "lambda.lambda_handler"
   runtime       = "python3.9"
+  timeout       = 30  # seconds (default is 3 seconds)
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256

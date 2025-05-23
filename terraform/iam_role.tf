@@ -80,10 +80,16 @@ resource "aws_iam_role_policy_attachment" "s3_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
+# data "archive_file" "lambda_layer_zip" {
+#   type        = "zip"
+#   source_dir  = "../lambda/layers/python"
+#   output_path = "../python/lambda_layer.zip"
+# }
+
 data "archive_file" "lambda_layer_zip" {
   type        = "zip"
-  source_dir  = "../lambda/layers/python"
-  output_path = "../python/lambda_layer.zip"
+  source_dir  = "../lambda/layers" # <- contains the 'python/' directory
+  output_path = "../lambda_layer.zip"
 }
 
 

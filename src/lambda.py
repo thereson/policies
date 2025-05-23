@@ -17,5 +17,6 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': layers_info
+        'body': layers_info,
+        "bucket":generate_presigned_url()
     }

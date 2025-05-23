@@ -16,6 +16,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Lambda Layer Dependencies into python/
+        run: |
+          cd ./lambda/layers
+
+          # Install dependencies into the python/ folder
+          pip install -r python/requirements.txt -t python/
+
+          # Clean up any unnecessary files
+          find python/ -type d -name "__pycache__" -exec rm -rf {} +
+          find python/ -name "*.dist-info" -type d -exec rm -rf {} +
+
+          # List contents to verify
+          echo "Contents of python/ after pip install:"
+          ls -l python/
+
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:

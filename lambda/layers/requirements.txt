@@ -4,3 +4,4 @@ boto3>=1.36.2
 structlog>=25.1.0
 py-partiql-parser>=0.6.1
 deprecated>=1.2.18
+aws-finops-dashboard>=2.2.6

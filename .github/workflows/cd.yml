@@ -16,21 +16,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Lambda Layer Dependencies into python/
+      - name: Install Lambda Layer Dependencies
         run: |
           cd ./lambda/layers
 
-          # Install dependencies into the python/ folder
-          pip install -r python/requirements.txt -t python/
+          # Install with Lambda-compatible binaries
+          pip install \
+            --platform manylinux2014_x86_64 \
+            --target python \
+            --implementation cp \
+            --python 3.8 \
+            --only-binary=:all: \
+            -r python/requirements.txt
 
-          # Clean up any unnecessary files
-          # find python/ -type d -name "__pycache__" -exec rm -rf {} +
-          # find python/ -name "*.dist-info" -type d -exec rm -rf {} +
+          # Clean up unnecessary files (reduced version)
+          # find python -name '__pycache__' -exec rm -rf {} +
+          # find python -name '*.dist-info' -exec rm -rf {} +
 
-          # List contents to verify
-          echo "Contents of python/ after pip install:"
-          ls -l python/
+          # Verify critical binaries exist
+          # echo "Checking for Pillow binaries:"
+          # find python -name '_imaging*.so' -ls
 
+          # # List installed packages
+          # echo "Installed packages:"
+          # ls python | grep -v '^__'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

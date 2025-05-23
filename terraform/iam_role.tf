@@ -70,16 +70,6 @@ data "archive_file" "lambda_zip" {
   output_path = "../src/custom.zip"
 }
 
-resource "aws_lambda_function" "my_lambda" {
-  function_name = "index"
-  role          = aws_iam_role.Lambda_execution_role.arn
-  handler       = "index.lambda_handler"
-  runtime       = "python3.9"
-
-  filename         = data.archive_file.lambda_zip.output_path
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  layers = [aws_lambda_layer_version.python_dependencies.arn]
-}
 
 
 # Attach a managed policy (e.g., S3 ReadOnly)
@@ -102,5 +92,14 @@ resource "aws_lambda_layer_version" "python_dependencies" {
   compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
 }
 
+resource "aws_lambda_function" "my_lambda" {
+  function_name = "index"
+  role          = aws_iam_role.Lambda_execution_role.arn
+  handler       = "index.lambda_handler"
+  runtime       = "python3.9"
 
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  layers = [aws_lambda_layer_version.python_dependencies.arn]
+}
 

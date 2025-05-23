@@ -46,7 +46,6 @@ resource "aws_iam_policy" "cost_explorer_policy" {
           "ce:GetDimensionValues",
           "ce:GetCostCategories",
           "ce:GetTags",
-          "Action": 
           "lambda:ListLayers",
           "lambda:ListLayerVersions"
         ],

@@ -122,12 +122,12 @@ resource "aws_lambda_function" "my_second" {
   layers = [aws_lambda_layer_version.python_dependencies.arn]
 }
 
-resource "null_resource" "check_zip_contents" {
-  provisioner "local-exec" {
-    command = "unzip -l ../lambda_layer.zip"
-  }
+# resource "null_resource" "check_zip_contents" {
+#   provisioner "local-exec" {
+#     command = "unzip -l ../lambda_layer.zip"
+#   }
 
-  triggers = {
-    always_run = "${timestamp()}" # Ensures it runs every time
-  }
-}
+#   triggers = {
+#     always_run = "${timestamp()}" # Ensures it runs every time
+#   }
+# }

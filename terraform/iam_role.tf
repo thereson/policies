@@ -118,7 +118,7 @@ resource "aws_lambda_function" "my_second" {
 
 resource "null_resource" "check_zip_contents" {
   provisioner "local-exec" {
-    command = "unzip -l ../lambda_layer.zip"
+    command = "unzip -l ../python/lambda_layer.zip"
   }
 
   triggers = {

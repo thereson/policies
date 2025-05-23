@@ -1,4 +1,4 @@
-from custom import name
+from bucket  import url
 
 
 def lambda_handler(event, context):

@@ -24,8 +24,8 @@ jobs:
           pip install -r python/requirements.txt -t python/
 
           # Clean up any unnecessary files
-          find python/ -type d -name "__pycache__" -exec rm -rf {} +
-          find python/ -name "*.dist-info" -type d -exec rm -rf {} +
+          # find python/ -type d -name "__pycache__" -exec rm -rf {} +
+          # find python/ -name "*.dist-info" -type d -exec rm -rf {} +
 
           # List contents to verify
           echo "Contents of python/ after pip install:"

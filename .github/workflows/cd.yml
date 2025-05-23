@@ -19,27 +19,21 @@ jobs:
       - name: Install Lambda Layer Dependencies
         run: |
           cd ./lambda/layers
-
-          # Install with Lambda-compatible binaries
-          pip install \
+          python -m pip install \
             --platform manylinux2014_x86_64 \
             --target python \
+            --python-version 3.8 \
             --implementation cp \
-            --python 3.8 \
             --only-binary=:all: \
             -r python/requirements.txt
-
-          # Clean up unnecessary files (reduced version)
+          
+          # Cleanup
           # find python -name '__pycache__' -exec rm -rf {} +
           # find python -name '*.dist-info' -exec rm -rf {} +
-
-          # Verify critical binaries exist
-          # echo "Checking for Pillow binaries:"
-          # find python -name '_imaging*.so' -ls
-
-          # # List installed packages
-          # echo "Installed packages:"
-          # ls python | grep -v '^__'
+          
+          # Verification
+          echo "Pillow binaries:"
+          # find python -name '_imaging*.so'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

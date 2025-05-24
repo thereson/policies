@@ -16,24 +16,53 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Lambda Layer Dependencies
+      # - name: Install Lambda Layer Dependencies
+      #   run: |
+      #     cd ./lambda/layers
+      #     python -m pip install \
+      #       --platform manylinux2014_x86_64 \
+      #       --target python \
+      #       --python-version 3.8 \
+      #       --implementation cp \
+      #       --only-binary=:all: \
+      #       -r python/requirements.txt
+          
+      #     # Cleanup
+      #     # find python -name '__pycache__' -exec rm -rf {} +
+      #     # find python -name '*.dist-info' -exec rm -rf {} +
+          
+      #     # Verification
+      #     echo "Pillow binaries:"
+      #      find python -name '_imaging*.so'
+
+      - name: Build Lambda Layer
         run: |
           cd ./lambda/layers
-          python -m pip install \
-            --platform manylinux2014_x86_64 \
-            --target python \
-            --python-version 3.8 \
-            --implementation cp \
-            --only-binary=:all: \
-            -r python/requirements.txt
+          rm -rf python  # Clean previous attempts
           
-          # Cleanup
-          # find python -name '__pycache__' -exec rm -rf {} +
-          # find python -name '*.dist-info' -exec rm -rf {} +
+          docker run --rm -v $(pwd):/out \
+            amazonlinux:2 bash -c '
+              yum install -y python38 python38-pip
+              python3.8 -m pip install \
+                --platform manylinux2014_x86_64 \
+                --target /out/python \
+                --only-binary=:all: \
+                --no-cache-dir \
+                --python-version 3.8 \
+                --implementation cp \
+                -r /out/python/requirements.txt
+              
+              # Critical verification
+              if ! python3.8 -c "from PIL import _imaging; print('Pillow binary loaded')"; then
+                echo "❌ Binary load test failed!"
+                find /out/python/PIL -name "_imaging*" -ls
+                ldd /out/python/PIL/_imaging.cpython-38-x86_64-linux-gnu.so
+                exit 1
+              fi
+            '
           
-          # Verification
-          echo "Pillow binaries:"
-           find python -name '_imaging*.so'
+          # Verify file structure
+          find python -name '_imaging*' -ls
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

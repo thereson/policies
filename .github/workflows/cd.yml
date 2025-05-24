@@ -66,8 +66,8 @@ jobs:
 
           docker run --rm -v "$PWD/lambda/layers/python":/python amazonlinux:2 bash -c "
             yum install -y python39 python39-pip gcc python39-devel libjpeg-devel zlib-devel &&
-            python3.9 -m pip install --upgrade pip &&
-            python3.9 -m pip install --target /python aws-finops-dashboard
+            /usr/bin/python3.9 -m pip install --upgrade pip &&
+            /usr/bin/python3.9 -m pip install --target /python aws-finops-dashboard
           "
 
           cd lambda/layers
@@ -95,3 +95,4 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
+

@@ -59,21 +59,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python for local packaging
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'  # Match your Lambda runtime
-
-      - name: Build Lambda Layer in Docker (Amazon Linux)
+      - name: Build Lambda Layer in Docker (Amazon Linux 2)
         run: |
           rm -rf lambda/layers/python
           mkdir -p lambda/layers/python
 
-          docker run --rm -v "$PWD/lambda/layers/python":/python public.ecr.aws/lambda/python:3.9 \
-            /bin/bash -c "
-              pip install --upgrade pip &&
-              pip install --platform manylinux2014_x86_64 --target /python --implementation cp --python-version 3.9 --only-binary=:all: aws-finops-dashboard
-            "
+          docker run --rm -v "$PWD/lambda/layers/python":/python amazonlinux:2 bash -c "
+            yum install -y python39 python39-pip gcc python39-devel libjpeg-devel zlib-devel &&
+            python3.9 -m pip install --upgrade pip &&
+            python3.9 -m pip install --target /python aws-finops-dashboard
+          "
 
           cd lambda/layers
           zip -r ../lambda_layer.zip python

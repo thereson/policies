@@ -59,7 +59,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python for local packaging
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'  # Match your Lambda runtime
@@ -68,16 +68,15 @@ jobs:
         run: |
           rm -rf lambda/layers/python
           mkdir -p lambda/layers/python
-          
-          # This is the corrected Docker command
-          docker run --rm -v "$PWD/lambda/layers":/var/task public.ecr.aws/lambda/python:3.9 /bin/bash -c "
-            pip install --upgrade pip &&
-            pip install --platform manylinux2014_x86_64 --target /var/task/python --implementation cp --python-version 3.9 --only-binary=:all: aws-finops-dashboard
-          "
-          
+
+          docker run --rm -v "$PWD/lambda/layers/python":/python public.ecr.aws/lambda/python:3.9 \
+            /bin/bash -c "
+              pip install --upgrade pip &&
+              pip install --platform manylinux2014_x86_64 --target /python --implementation cp --python-version 3.9 --only-binary=:all: aws-finops-dashboard
+            "
+
           cd lambda/layers
           zip -r ../lambda_layer.zip python
-
 
       - name: Verify Layer Contents
         run: |

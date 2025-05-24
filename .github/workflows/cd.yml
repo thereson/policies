@@ -46,7 +46,7 @@ name: Terraform Apply on Merge
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   terraform-apply:
@@ -62,29 +62,28 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: '3.9'  # Match your Lambda runtime
 
-      - name: Install Lambda Layer Dependencies
+      - name: Build Lambda Layer in Docker (Amazon Linux)
         run: |
-          mkdir -p ./lambda/layers/python
-          
-          # Install aws-finops-dashboard with compatible dependencies
-          pip install \
-            --platform manylinux2014_x86_64 \
-            --target ./lambda/layers/python \
-            --implementation cp \
-            --python-version 3.8 \
-            --only-binary=:all: \
-            aws-finops-dashboard
-          
-          # Create zip file for Lambda layer
-          cd ./lambda/layers
-          zip -r aws-finops-dashboard-layer.zip python/
-          
-          # Verification
-          echo "Layer size: $(du -sh aws-finops-dashboard-layer.zip | cut -f1)"
-          echo "Installed packages:"
-          find python -name "*.dist-info" | sed 's/\.dist-info.*//' | sort
+          rm -rf lambda/layers/python
+          mkdir -p lambda/layers/python
+          docker run --rm -v "$PWD/lambda/layers":/lambda/layers public.ecr.aws/lambda/python:3.9 bash -c "
+            pip install --upgrade pip &&
+            pip install --platform manylinux2014_x86_64 --target /lambda/layers/python --implementation cp --python-version 3.9 --only-binary=:all: aws-finops-dashboard
+          "
+          cd lambda/layers
+          zip -r ../lambda_layer.zip python
+
+      - name: Verify Layer Contents
+        run: |
+          unzip -l lambda/lambda_layer.zip | grep _imaging || (echo 'Pillow _imaging.so not found!' && exit 1)
+          unzip -l lambda/lambda_layer.zip | grep aws_finops_dashboard || (echo 'AWS FinOps Dashboard not found!' && exit 1)
+
+      - name: Package Lambda Function
+        run: |
+          cd src
+          zip -r ../lambda_function.zip .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

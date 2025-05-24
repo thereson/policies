@@ -1,29 +1,28 @@
 import json
-import os
+import sys
+from aws_finops_dashboard.cli import main as finops_main
 
 def lambda_handler(event, context):
-    from aws_finops_dashboard.cli import main
-    
-    # Set report file path
-    report_file = "/tmp/finops_report.json"
-    
-    # Run with JSON output
-    main([
+    # Example: simulate CLI arguments for the dashboard
+    sys.argv = [
+        "aws-finops",  # Dummy script name
         "--profiles", "default",
-        "--time-range", "30",
-        "--report-name", "finops_report",
         "--report-type", "json",
-        "--dir", "/tmp"
-    ])
+        "--report-name", "/tmp/finops_output"
+    ]
     
-    # Read and return the report
-    with open(report_file, 'r') as f:
-        report_data = json.load(f)
-    
-    # Clean up
-    os.remove(report_file)
-    
-    return {
-        'statusCode': 200,
-        'body': report_data
-    }
+    # Run the dashboard (outputs to /tmp/finops_output.json)
+    try:
+        finops_main()
+        # Read the generated JSON report
+        with open("/tmp/finops_output.json", "r") as f:
+            report_data = json.load(f)
+        return {
+            "statusCode": 200,
+            "body": report_data
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": str(e)
+        }

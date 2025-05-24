@@ -68,12 +68,16 @@ jobs:
         run: |
           rm -rf lambda/layers/python
           mkdir -p lambda/layers/python
-          docker run --rm -v "$PWD/lambda/layers":/lambda/layers public.ecr.aws/lambda/python:3.9 bash -c "
+          
+          # This is the corrected Docker command
+          docker run --rm -v "$PWD/lambda/layers":/var/task public.ecr.aws/lambda/python:3.9 /bin/bash -c "
             pip install --upgrade pip &&
-            pip install --platform manylinux2014_x86_64 --target /lambda/layers/python --implementation cp --python-version 3.9 --only-binary=:all: aws-finops-dashboard
+            pip install --platform manylinux2014_x86_64 --target /var/task/python --implementation cp --python-version 3.9 --only-binary=:all: aws-finops-dashboard
           "
+          
           cd lambda/layers
           zip -r ../lambda_layer.zip python
+
 
       - name: Verify Layer Contents
         run: |

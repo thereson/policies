@@ -1,3 +1,46 @@
+# name: Terraform Apply on Merge
+
+# on:
+#   push:
+#     branches:
+#       - main  
+
+# jobs:
+#   terraform-apply:
+#     runs-on: ubuntu-latest
+#     env:
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Install Lambda Layer Dependencies
+#         run: |
+#           cd ./lambda/layers
+#           python -m pip install \
+#             --platform manylinux2014_x86_64 \
+#             --target python \
+#             --python-version 3.8 \
+#             --implementation cp \
+#             --only-binary=:all: \
+#             -r python/requirements.txt
+          
+#           # Cleanup
+#           # find python -name '__pycache__' -exec rm -rf {} +
+#           # find python -name '*.dist-info' -exec rm -rf {} +
+          
+#           # Verification
+#           echo "Pillow binaries:"
+#            find python -name '_imaging*.so'
+
+
+#       # - name: Terraform Init
+#       #   run: terraform init
+
+#       # - name: Terraform Apply
+#       #   run: terraform apply -auto-approve
 name: Terraform Apply on Merge
 
 on:
@@ -16,28 +59,42 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
       - name: Install Lambda Layer Dependencies
         run: |
-          cd ./lambda/layers
-          python -m pip install \
-            --platform manylinux2014_x86_64 \
-            --target python \
-            --python-version 3.8 \
-            --implementation cp \
-            --only-binary=:all: \
-            -r python/requirements.txt
+          mkdir -p ./lambda/layers/python
           
-          # Cleanup
-          # find python -name '__pycache__' -exec rm -rf {} +
-          # find python -name '*.dist-info' -exec rm -rf {} +
+          # Install aws-finops-dashboard with compatible dependencies
+          pip install \
+            --platform manylinux2014_x86_64 \
+            --target ./lambda/layers/python \
+            --implementation cp \
+            --python-version 3.8 \
+            --only-binary=:all: \
+            aws-finops-dashboard
+          
+          # Create zip file for Lambda layer
+          cd ./lambda/layers
+          zip -r aws-finops-dashboard-layer.zip python/
           
           # Verification
-          echo "Pillow binaries:"
-           find python -name '_imaging*.so'
+          echo "Layer size: $(du -sh aws-finops-dashboard-layer.zip | cut -f1)"
+          echo "Installed packages:"
+          find python -name "*.dist-info" | sed 's/\.dist-info.*//' | sort
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.0.0
 
-      # - name: Terraform Init
-      #   run: terraform init
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
 
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform

@@ -1,56 +1,3 @@
-# name: Terraform Apply on Merge
-
-# on:
-#   push:
-#     branches:
-#       - main  
-
-# jobs:
-#   terraform-apply:
-#     runs-on: ubuntu-latest
-#     env:
-#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Install Lambda Layer Dependencies
-#         run: |
-#           cd ./lambda/layers
-#           python -m pip install \
-#             --platform manylinux2014_x86_64 \
-#             --target python \
-#             --python-version 3.8 \
-#             --implementation cp \
-#             --only-binary=:all: \
-#             -r python/requirements.txt
-          
-#           # Cleanup
-#           # find python -name '__pycache__' -exec rm -rf {} +
-#           # find python -name '*.dist-info' -exec rm -rf {} +
-          
-#           # Verification
-#           echo "Pillow binaries:"
-#           # find python -name '_imaging*.so'
-
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v3
-#         with:
-#           terraform_version: latest
-
-#       - name: Terraform Init & Apply
-#         working-directory: ./terraform  # <-- Key change
-#         run: |
-#           terraform init
-#           terraform apply -auto-approve
-
-#       # - name: Terraform Init
-#       #   run: terraform init
-
-#       # - name: Terraform Apply
-#       #   run: terraform apply -auto-approve
 name: Terraform Apply on Merge
 
 on:
@@ -69,34 +16,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Lambda Dependencies (Fixed)
+      - name: Install Lambda Layer Dependencies
         run: |
           cd ./lambda/layers
+          python -m pip install \
+            --platform manylinux2014_x86_64 \
+            --target python \
+            --python-version 3.8 \
+            --implementation cp \
+            --only-binary=:all: \
+            -r python/requirements.txt
           
-          # Clean previous installs
-          rm -rf python
+          # Cleanup
+          # find python -name '__pycache__' -exec rm -rf {} +
+          # find python -name '*.dist-info' -exec rm -rf {} +
           
-          # Install using Docker for perfect compatibility
-          docker run --rm -v $(pwd):/out \
-            amazonlinux:2 bash -c '
-              yum install -y python38 python38-pip
-              python3.8 -m pip install \
-                --platform manylinux2014_x86_64 \
-                --target /out/python \
-                --only-binary=:all: \
-                --no-cache-dir \
-                -r /out/python/requirements.txt
-                
-              # Verify critical binaries
-              if ! find /out/python -name "_imaging*.so" | grep -q .; then
-                echo "❌ ERROR: Missing Pillow binary!"
-                exit 1
-              fi
-            '
-          
-          # Post-install verification
-          echo "Verifying installation:"
-          find python -name '_imaging*.so' -ls || exit 1
+          # Verification
+          echo "Pillow binaries:"
+           find python -name '_imaging*.so'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -104,7 +41,13 @@ jobs:
           terraform_version: latest
 
       - name: Terraform Init & Apply
-        working-directory: ./terraform
+        working-directory: ./terraform  # <-- Key change
         run: |
-          terraform init -input=false
+          terraform init
           terraform apply -auto-approve
+
+      # - name: Terraform Init
+      #   run: terraform init
+
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve

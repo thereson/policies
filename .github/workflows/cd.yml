@@ -1,3 +1,56 @@
+# name: Terraform Apply on Merge
+
+# on:
+#   push:
+#     branches:
+#       - main  
+
+# jobs:
+#   terraform-apply:
+#     runs-on: ubuntu-latest
+#     env:
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Install Lambda Layer Dependencies
+#         run: |
+#           cd ./lambda/layers
+#           python -m pip install \
+#             --platform manylinux2014_x86_64 \
+#             --target python \
+#             --python-version 3.8 \
+#             --implementation cp \
+#             --only-binary=:all: \
+#             -r python/requirements.txt
+          
+#           # Cleanup
+#           # find python -name '__pycache__' -exec rm -rf {} +
+#           # find python -name '*.dist-info' -exec rm -rf {} +
+          
+#           # Verification
+#           echo "Pillow binaries:"
+#           # find python -name '_imaging*.so'
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v3
+#         with:
+#           terraform_version: latest
+
+#       - name: Terraform Init & Apply
+#         working-directory: ./terraform  # <-- Key change
+#         run: |
+#           terraform init
+#           terraform apply -auto-approve
+
+#       # - name: Terraform Init
+#       #   run: terraform init
+
+#       # - name: Terraform Apply
+#       #   run: terraform apply -auto-approve
 name: Terraform Apply on Merge
 
 on:
@@ -16,24 +69,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Lambda Layer Dependencies
+      - name: Install Lambda Dependencies
         run: |
           cd ./lambda/layers
+          
+          # Install with Lambda-compatible binaries
           python -m pip install \
             --platform manylinux2014_x86_64 \
             --target python \
             --python-version 3.8 \
             --implementation cp \
             --only-binary=:all: \
+            --no-cache-dir \
             -r python/requirements.txt
           
-          # Cleanup
-          # find python -name '__pycache__' -exec rm -rf {} +
-          # find python -name '*.dist-info' -exec rm -rf {} +
-          
-          # Verification
-          echo "Pillow binaries:"
-          # find python -name '_imaging*.so'
+          # Verify critical binaries exist
+          echo "Verifying Pillow binaries:"
+          find python -name '_imaging*.so' -ls
+
+          # Cleanup (optional)
+          find python -type d -name "__pycache__" -exec rm -rf {} +
+          find python -type d -name "*.dist-info" -exec rm -rf {} +
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -41,14 +97,7 @@ jobs:
           terraform_version: latest
 
       - name: Terraform Init & Apply
-        working-directory: ./terraform  # <-- Key change
+        working-directory: ./terraform
         run: |
-          terraform init
+          terraform init -input=false
           terraform apply -auto-approve
-
-      # - name: Terraform Init
-      #   run: terraform init
-
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve
-        

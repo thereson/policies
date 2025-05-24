@@ -69,27 +69,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Lambda Dependencies
+      - name: Install Lambda Dependencies (Fixed)
         run: |
           cd ./lambda/layers
           
-          # Install with Lambda-compatible binaries
-          python -m pip install \
-            --platform manylinux2014_x86_64 \
-            --target python \
-            --python-version 3.8 \
-            --implementation cp \
-            --only-binary=:all: \
-            --no-cache-dir \
-            -r python/requirements.txt
+          # Clean previous installs
+          rm -rf python
           
-          # Verify critical binaries exist
-          echo "Verifying Pillow binaries:"
-          find python -name '_imaging*.so' -ls
-
-          # Cleanup (optional)
-          find python -type d -name "__pycache__" -exec rm -rf {} +
-          find python -type d -name "*.dist-info" -exec rm -rf {} +
+          # Install using Docker for perfect compatibility
+          docker run --rm -v $(pwd):/out \
+            amazonlinux:2 bash -c '
+              yum install -y python38 python38-pip
+              python3.8 -m pip install \
+                --platform manylinux2014_x86_64 \
+                --target /out/python \
+                --only-binary=:all: \
+                --no-cache-dir \
+                -r /out/python/requirements.txt
+                
+              # Verify critical binaries
+              if ! find /out/python -name "_imaging*.so" | grep -q .; then
+                echo "❌ ERROR: Missing Pillow binary!"
+                exit 1
+              fi
+            '
+          
+          # Post-install verification
+          echo "Verifying installation:"
+          find python -name '_imaging*.so' -ls || exit 1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

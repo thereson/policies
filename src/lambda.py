@@ -14,6 +14,7 @@ def lambda_handler(event, context):
     # Run the dashboard (outputs to /tmp/finops_output.json)
     try:
         finops_main()
+        print("hello world")
         # Read the generated JSON report
         with open("/tmp/finops_output.json", "r") as f:
             report_data = json.load(f)

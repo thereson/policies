@@ -101,7 +101,7 @@ resource "aws_iam_role_policy_attachment" "s3_readonly" {
 # }
 
 resource "aws_lambda_layer_version" "python_dependencies" {
-  filename            = "../lambda_layer.zip" # Path to the zip built by GitHub Actions
+  filename            = "../lambda/lambda_layer.zip" # Path to the zip built by GitHub Actions
   layer_name          = "python_dependencies"
   compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
 }

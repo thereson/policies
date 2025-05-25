@@ -1,52 +1,9 @@
-# name: Terraform Apply on Merge
-
-# on:
-#   push:
-#     branches:
-#       - main  
-
-# jobs:
-#   terraform-apply:
-#     runs-on: ubuntu-latest
-#     env:
-#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Install Lambda Layer Dependencies
-#         run: |
-#           cd ./lambda/layers
-#           python -m pip install \
-#             --platform manylinux2014_x86_64 \
-#             --target python \
-#             --python-version 3.8 \
-#             --implementation cp \
-#             --only-binary=:all: \
-#             -r python/requirements.txt
-          
-#           # Cleanup
-#           # find python -name '__pycache__' -exec rm -rf {} +
-#           # find python -name '*.dist-info' -exec rm -rf {} +
-          
-#           # Verification
-#           echo "Pillow binaries:"
-#            find python -name '_imaging*.so'
-
-
-#       # - name: Terraform Init
-#       #   run: terraform init
-
-#       # - name: Terraform Apply
-#       #   run: terraform apply -auto-approve
 name: Terraform Apply on Merge
 
 on:
   push:
     branches:
-      - main
+      - main  
 
 jobs:
   terraform-apply:
@@ -59,39 +16,82 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Lambda Layer in Docker (Lambda Python 3.9 Build Image)
+      - name: Install Lambda Layer Dependencies
         run: |
-          rm -rf lambda/layers/python
-          mkdir -p lambda/layers/python
+          cd ./lambda/layers
+          python -m pip install \
+            --platform manylinux2014_x86_64 \
+            --target python \
+            --python-version 3.8 \
+            --implementation cp \
+            --only-binary=:all: \
+            -r python/requirements.txt
+          
+          # Cleanup
+          # find python -name '__pycache__' -exec rm -rf {} +
+          # find python -name '*.dist-info' -exec rm -rf {} +
+          
+          # Verification
+          echo "Pillow binaries:"
+           find python -name '_imaging*.so'
 
-          docker run --rm -v "$PWD/lambda/layers/python":/python public.ecr.aws/sam/build-python3.9 /bin/bash -c "
-            python3 -m pip install --upgrade pip &&
-            python3 -m pip install --target /python aws-finops-dashboard
-          "
-
-          cd lambda/layers
-          zip -r ../lambda_layer.zip python
-
-      - name: Verify Layer Contents
-        run: |
-          unzip -l lambda/lambda_layer.zip | grep _imaging || (echo 'Pillow _imaging.so not found!' && exit 1)
-          unzip -l lambda/lambda_layer.zip | grep aws_finops_dashboard || (echo 'AWS FinOps Dashboard not found!' && exit 1)
-
-      - name: Package Lambda Function
-        run: |
-          cd src
-          zip -r ../lambda_function.zip .
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.0.0
 
       - name: Terraform Init
-        run: terraform init
-        working-directory: ./terraform
+         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ./terraform
+         run: terraform apply -auto-approve
+# name: Terraform Apply on Merge
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   terraform-apply:
+#     runs-on: ubuntu-latest
+#     env:
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Build Lambda Layer in Docker (Lambda Python 3.9 Build Image)
+#         run: |
+#           rm -rf lambda/layers/python
+#           mkdir -p lambda/layers/python
+
+#           docker run --rm -v "$PWD/lambda/layers/python":/python public.ecr.aws/sam/build-python3.9 /bin/bash -c "
+#             python3 -m pip install --upgrade pip &&
+#             python3 -m pip install --target /python aws-finops-dashboard
+#           "
+
+#           cd lambda/layers
+#           zip -r ../lambda_layer.zip python
+
+#       - name: Verify Layer Contents
+#         run: |
+#           unzip -l lambda/lambda_layer.zip | grep _imaging || (echo 'Pillow _imaging.so not found!' && exit 1)
+#           unzip -l lambda/lambda_layer.zip | grep aws_finops_dashboard || (echo 'AWS FinOps Dashboard not found!' && exit 1)
+
+#       - name: Package Lambda Function
+#         run: |
+#           cd src
+#           zip -r ../lambda_function.zip .
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.0.0
+
+#       - name: Terraform Init
+#         run: terraform init
+#         working-directory: ./terraform
+
+#       - name: Terraform Apply
+#         run: terraform apply -auto-approve
+#         working-directory: ./terraform
 

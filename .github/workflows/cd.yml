@@ -62,7 +62,7 @@ jobs:
         run: |
           # Clean previous build
           # rm -rf lambda/layers/python
-           mkdir -p lambda/layers/python
+          #  mkdir -p lambda/layers/python
 
           # Build dependencies in a Lambda-compatible environment
           docker run --rm -v "$PWD/lambda/layers/python":/python public.ecr.aws/sam/build-python3.9 /bin/bash -c "

@@ -127,6 +127,13 @@ resource "aws_lambda_function" "my_second" {
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   layers = [aws_lambda_layer_version.python_dependencies.arn]
+  environment {
+    variables = {
+      aws_access_id = var.AWS_ACCESS_ID
+      aws_secret_key = var.AWS_SECRET_KEY
+      region = var.REGION
+    }
+  }
 }
 
 # resource "null_resource" "check_zip_contents" {

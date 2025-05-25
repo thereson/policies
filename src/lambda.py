@@ -6,9 +6,9 @@ def lambda_handler(event, context):
     try:
         sys.argv = [
             "aws-finops",
+            "--profiles", "default",  # or replace "default" with your profile name
             "--report-type", "json",
             "--report-name", "/tmp/finops_output"
-            # Do NOT add --profiles or --config-file unless you know they exist in Lambda!
         ]
         finops_main()
         with open("/tmp/finops_output.json") as f:

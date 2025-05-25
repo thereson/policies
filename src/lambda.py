@@ -8,12 +8,12 @@ def lambda_handler(event, context):
             "aws-finops",
             "--report-type", "json",
             "--report-name", "/tmp/finops_output"
+            # Do NOT add --profiles or --config-file unless you know they exist in Lambda!
         ]
         finops_main()
         with open("/tmp/finops_output.json") as f:
             return {"report": f.read()}
     except SystemExit as e:
-        # This will catch sys.exit() from the CLI
         return {
             "error": f"CLI exited with status {e.code}",
             "trace": traceback.format_exc()

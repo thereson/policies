@@ -1,4 +1,5 @@
 import sys
+import traceback
 from aws_finops_dashboard.cli import main as finops_main
 
 def lambda_handler(event, context):
@@ -9,8 +10,16 @@ def lambda_handler(event, context):
             "--report-name", "/tmp/finops_output"
         ]
         finops_main()
-        # Optionally, read and return the report
         with open("/tmp/finops_output.json") as f:
             return {"report": f.read()}
+    except SystemExit as e:
+        # This will catch sys.exit() from the CLI
+        return {
+            "error": f"CLI exited with status {e.code}",
+            "trace": traceback.format_exc()
+        }
     except Exception as e:
-        return {"error": str(e)}
+        return {
+            "error": str(e),
+            "trace": traceback.format_exc()
+        }

@@ -100,11 +100,11 @@ resource "aws_lambda_layer_version" "python_dependencies" {
   compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
 }
 
-resource "aws_lambda_layer_version" "python_dependencies" {
-  filename            = "../lambda_layer.zip" # Path to the zip built by GitHub Actions
-  layer_name          = "python_dependencies"
-  compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
-}
+# resource "aws_lambda_layer_version" "python_dependencies" {
+#   filename            = "../lambda_layer.zip" # Path to the zip built by GitHub Actions
+#   layer_name          = "python_dependencies"
+#   compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
+# }
 
 
 resource "aws_lambda_function" "my_lambda" {

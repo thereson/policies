@@ -32,9 +32,8 @@ jobs:
           # find python -name '*.dist-info' -exec rm -rf {} +
           
           # Verification
-          echo "Pillow binaries:"
-           find python -name '_imaging*.so'
-
+          # echo "Pillow binaries:"
+          #  find python -name '_imaging*.so'
 
       - name: Terraform Init
          run: terraform init

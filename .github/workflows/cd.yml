@@ -26,20 +26,13 @@ jobs:
             --implementation cp \
             --only-binary=:all: \
             -r python/requirements.txt
-          
-          # Cleanup
-          # find python -name '__pycache__' -exec rm -rf {} +
-          # find python -name '*.dist-info' -exec rm -rf {} +
-          
-          # Verification
-          # echo "Pillow binaries:"
-          #  find python -name '_imaging*.so'
 
       - name: Terraform Init
-         run: terraform init
+        run: terraform init
 
       - name: Terraform Apply
-         run: terraform apply -auto-approve
+        run: terraform apply -auto-approve
+
 # name: Terraform Apply on Merge
 
 # on:

@@ -93,18 +93,18 @@ data "archive_file" "lambda_layer_zip" {
 }
 
 
-resource "aws_lambda_layer_version" "python_dependencies" {
-  filename            = data.archive_file.lambda_layer_zip.output_path
-  layer_name          = "python_dependencies"
-  source_code_hash    = data.archive_file.lambda_layer_zip.output_base64sha256
-  compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
-}
-
 # resource "aws_lambda_layer_version" "python_dependencies" {
-#   filename            = "../lambda_layer.zip" # Path to the zip built by GitHub Actions
+#   filename            = data.archive_file.lambda_layer_zip.output_path
 #   layer_name          = "python_dependencies"
+#   source_code_hash    = data.archive_file.lambda_layer_zip.output_base64sha256
 #   compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
 # }
+
+resource "aws_lambda_layer_version" "python_dependencies" {
+  filename            = "../lambda_layer.zip" # Path to the zip built by GitHub Actions
+  layer_name          = "python_dependencies"
+  compatible_runtimes = ["python3.8", "python3.9", "python3.10"]
+}
 
 
 resource "aws_lambda_function" "my_lambda" {

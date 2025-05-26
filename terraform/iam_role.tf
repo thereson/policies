@@ -132,6 +132,7 @@ resource "aws_lambda_function" "my_second" {
       aws_access_id = var.AWS_ACCESS_ID
       aws_secret_key = var.AWS_SECRET_KEY
       region = var.REGION
+      profile = "james"
     }
   }
 }

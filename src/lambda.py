@@ -7,9 +7,9 @@ from aws_finops_dashboard.cli import main as finops_main
 def lambda_handler(event, context):
     try:
         # 1. Get credentials from environment variables (set these in Lambda console or your deploy tool)
-        aws_access_key_id = os.environ.get("MY_AWS_ACCESS_KEY_ID")
-        aws_secret_access_key = os.environ.get("MY_AWS_SECRET_ACCESS_KEY")
-        aws_region = os.environ.get("MY_AWS_REGION", "us-east-1")
+        aws_access_key_id = os.environ.get("aws_access_id")
+        aws_secret_access_key = os.environ.get("aws_secret_key")
+        aws_region = os.environ.get("region", "us-east-1")
         profile_name = "myprofile"
 
         # 2. Write AWS credentials file to /tmp

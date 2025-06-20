@@ -22,7 +22,7 @@ resource "aws_subnet" "public" {
   count                   = 3
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.${100 + count.index}.0/24"
-  availability_zone       = element(["eu-north-1a", "eu-north-1b", "eu-north-1c"], count.index)
+  availability_zone       = element(["us-east-1a", "us-east-1b", "us-east-1c"], count.index)
   map_public_ip_on_launch = true
 
   tags = {
@@ -35,7 +35,7 @@ resource "aws_subnet" "private" {
   count             = 3
   vpc_id            = aws_vpc.eks_vpc.id
   cidr_block        = "10.0.${count.index + 1}.0/24"
-  availability_zone = element(["eu-north-1a", "eu-north-1b", "eu-north-1c"], count.index)
+  availability_zone = element(["us-east-1a", "us-east-1b", "us-east-1c"], count.index)
 
   tags = {
     Name                                = "eks-private-${count.index}"
